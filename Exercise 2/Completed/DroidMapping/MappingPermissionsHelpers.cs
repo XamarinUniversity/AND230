@@ -19,7 +19,7 @@ namespace DroidMapping
 
         public bool HasMappingPermissions()
         {
-            return requiredPermissions.All(permission => CurrentActivity.CheckSelfPermission(permission) == Android.Content.PM.Permission.Granted);
+            return requiredPermissions.All(permission => CurrentActivity.CheckSelfPermission(permission) == Permission.Granted);
         }
         public bool ShouldShowPermissionRationale()
         {
