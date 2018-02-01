@@ -4,16 +4,15 @@ using Android.OS;
 
 namespace DroidMapping
 {
-    [Activity(Label = "DroidMapping", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "DroidMapping", MainLauncher = true)]
     public class MainActivity : Activity
     {
-        protected override void OnCreate(Bundle bundle)
+        protected override void OnCreate(Bundle savedInstanceState)
         {
-            base.OnCreate(bundle);
+            base.OnCreate(savedInstanceState);
 
             // Set our view from the "main" layout resource
-            // SetContentView (Resource.Layout.Main);
+            SetContentView(Resource.Layout.Main);
         }
     }
 }
-
