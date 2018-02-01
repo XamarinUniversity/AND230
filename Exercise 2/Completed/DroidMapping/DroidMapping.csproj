@@ -101,7 +101,7 @@
   <ItemGroup>
     <Compile Include="GoogleMapsKey.cs" />
     <Compile Include="MainActivity.cs" />
-    <Compile Include="MappingPermissionsHelpers.cs" />
+    <Compile Include="MappingPermissionsHelper.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

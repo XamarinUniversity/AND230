@@ -9,7 +9,7 @@ namespace DroidMapping
     [Activity(Label = "DroidMapping", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : Activity
     {
-        MappingPermissionsHelpers permissionHelper;
+        MappingPermissionsHelper permissionHelper;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -17,7 +17,7 @@ namespace DroidMapping
 
             SetContentView(Resource.Layout.Main);
 
-            permissionHelper = new MappingPermissionsHelpers(this);
+            permissionHelper = new MappingPermissionsHelper(this);
             permissionHelper.CheckAndRequestPermissions();
         }
 

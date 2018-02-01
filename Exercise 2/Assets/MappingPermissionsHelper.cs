@@ -6,13 +6,13 @@ using System.Linq;
 
 namespace DroidMapping
 {
-    class MappingPermissionsHelpers
+    class MappingPermissionsHelper
     {
         Activity CurrentActivity { get; set; }
         const int MappingPermissionsRequestCode = 1;
         static string[] requiredPermissions = new[] { Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation, Manifest.Permission.WriteExternalStorage };
         
-        public MappingPermissionsHelpers(Activity activity)
+        public MappingPermissionsHelper(Activity activity)
         {
             CurrentActivity = activity;
         }
