@@ -10,7 +10,7 @@ namespace DroidMapping
     {
         Activity CurrentActivity { get; set; }
         const int MappingPermissionsRequestCode = 1;
-        static string[] requiredPermissions = new[] { Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation, Manifest.Permission.WriteExternalStorage };
+        static string[] requiredPermissions = new[] { Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation };
         
         public MappingPermissionsHelper(Activity activity)
         {
@@ -52,7 +52,7 @@ namespace DroidMapping
         {
             // Show something to explain, with an option that will ask for permission again.
             var permissionExplanationAlert = new AlertDialog.Builder(CurrentActivity)
-                .SetMessage($"{nameof(DroidMapping)} needs location permission to map your position and storage permission for map data caching. Can we have permission to use your location and cache map data ?")
+                .SetMessage($"{nameof(DroidMapping)} needs location permission to map your position. Can we have permission to use your location?")
                 .SetPositiveButton("Allow location use", (sender, args) =>
                 {
                     // User convinced to let us ask again. Have Android ask for permissions we need.
@@ -74,7 +74,7 @@ namespace DroidMapping
         {
             if (requestCode != MappingPermissionsRequestCode) { return; }
 
-            if (permissions.Length != 3
+            if (permissions.Length != requiredPermissions.Length
                 || grantResults.Any(grantResult => grantResult == Permission.Denied))
             {
                 var cannotProceedWithoutPermissionAlert = new AlertDialog.Builder(CurrentActivity)

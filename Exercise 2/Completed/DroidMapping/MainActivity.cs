@@ -1,20 +1,20 @@
-﻿using Android;
-using Android.App;
+﻿using Android.App;
 using Android.Widget;
 using Android.OS;
 using Android.Content.PM;
 
 namespace DroidMapping
 {
-    [Activity(Label = "DroidMapping", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "DroidMapping", MainLauncher = true)]
     public class MainActivity : Activity
     {
         MappingPermissionsHelper permissionHelper;
 
-        protected override void OnCreate(Bundle bundle)
+        protected override void OnCreate(Bundle savedInstanceState)
         {
-            base.OnCreate(bundle);
+            base.OnCreate(savedInstanceState);
 
+            // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
 
             permissionHelper = new MappingPermissionsHelper(this);
