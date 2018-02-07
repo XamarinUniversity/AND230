@@ -8,32 +8,33 @@ namespace DroidMapping
 {
     public class MappingPermissionsHelper
     {
-        Activity CurrentActivity { get; set; }
+        readonly Activity currentActivity;
         const int MappingPermissionsRequestCode = 1;
         static string[] requiredPermissions = new[] { Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation };
         
         public MappingPermissionsHelper(Activity activity)
         {
-            CurrentActivity = activity;
+            currentActivity = activity;
         }
 
         public bool HasMappingPermissions()
         {
-            return requiredPermissions.All(permission => CurrentActivity.CheckSelfPermission(permission) == Permission.Granted);
+            return requiredPermissions.All(permission => currentActivity.CheckSelfPermission(permission) == Permission.Granted);
         }
         public bool ShouldShowPermissionRationale()
         {
             // Has user previously rejected a permission we need. We should show something to explain, with an option that will ask for permission again.
-            return requiredPermissions.Any(permission => CurrentActivity.ShouldShowRequestPermissionRationale(permission));
+            return requiredPermissions.Any(permission => currentActivity.ShouldShowRequestPermissionRationale(permission));
         }
 
         public void RequestPermissions()
         {
-            CurrentActivity.RequestPermissions(requiredPermissions, MappingPermissionsRequestCode);
+            currentActivity.RequestPermissions(requiredPermissions, MappingPermissionsRequestCode);
         }
 
         public void CheckAndRequestPermissions()
         {
+            // Only required for Android Nougat and newer.
             if ((int)Build.VERSION.SdkInt < 23) { return; }
 
             if (HasMappingPermissions()) { return; }
@@ -51,7 +52,7 @@ namespace DroidMapping
         void ShowPermissionRationale()
         {
             // Show something to explain, with an option that will ask for permission again.
-            var permissionExplanationAlert = new AlertDialog.Builder(CurrentActivity)
+            var permissionExplanationAlert = new AlertDialog.Builder(currentActivity)
                 .SetMessage($"{nameof(DroidMapping)} needs location permission to map your position. Can we have permission to use your location?")
                 .SetPositiveButton("Allow location use", (sender, args) =>
                 {
@@ -60,10 +61,10 @@ namespace DroidMapping
                 })
                 .SetNegativeButton("No thanks", (sender, args) =>
                 {
-                    var cannotProceedWithoutPermissionAlert = new AlertDialog.Builder(CurrentActivity)
-                            .SetMessage("Without permission to use your location, you won't see your position on the map.")
-                            .SetPositiveButton("Okay", (s, a) => { })
-                            .Create();
+                    var cannotProceedWithoutPermissionAlert = new AlertDialog.Builder(currentActivity)
+                        .SetMessage("Without permission to use your location, you won't see your position on the map.")
+                        .SetPositiveButton("Okay", (s, a) => { })
+                        .Create();
                     cannotProceedWithoutPermissionAlert.Show();
                 })
                 .Create();
@@ -77,7 +78,7 @@ namespace DroidMapping
             if (permissions.Length != requiredPermissions.Length
                 || grantResults.Any(grantResult => grantResult == Permission.Denied))
             {
-                var cannotProceedWithoutPermissionAlert = new AlertDialog.Builder(CurrentActivity)
+                var cannotProceedWithoutPermissionAlert = new AlertDialog.Builder(currentActivity)
                     .SetMessage("Without permission to use your location, you won't see your position on the map.")
                     .SetPositiveButton("Okay", (s, a) => { })
                     .Create();

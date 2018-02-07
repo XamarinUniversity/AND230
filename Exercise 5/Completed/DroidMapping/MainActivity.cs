@@ -42,6 +42,7 @@ namespace DroidMapping
             map.MyLocationEnabled = true;
 
             map.AddMarker(new MarkerOptions().SetPosition(Location_NewYork));
+
             map.AddMarker(new MarkerOptions()
                 .SetPosition(Location_Xamarin)
                 .SetTitle("Xamarin HQ")
@@ -91,7 +92,6 @@ namespace DroidMapping
                 }
             };
 
-            // Center on Xamarin HQ
             CameraUpdate update = CameraUpdateFactory.NewLatLngZoom(Location_Xamarin, map.MaxZoomLevel);
             map.MoveCamera(update);
 

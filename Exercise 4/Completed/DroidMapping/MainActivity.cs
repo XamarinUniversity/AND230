@@ -42,6 +42,7 @@ namespace DroidMapping
             map.MyLocationEnabled = true;
 
             map.AddMarker(new MarkerOptions().SetPosition(Location_NewYork));
+
             map.AddMarker(new MarkerOptions()
                 .SetPosition(Location_Xamarin)
                 .SetTitle("Xamarin HQ")
