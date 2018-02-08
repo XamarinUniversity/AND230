@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Content.PM;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
+using System.Threading.Tasks;
 
 namespace DroidMapping
 {
@@ -23,23 +24,32 @@ namespace DroidMapping
         {
             base.OnCreate(savedInstanceState);
 
-            // Set our view from the "main" layout resource
-            SetContentView(Resource.Layout.Main);
-
             permissionHelper = new MappingPermissionsHelper(this);
             permissionHelper.CheckAndRequestPermissions();
 
-            mapFragment = FragmentManager.FindFragmentById(Resource.Id.map) as MapFragment;
+            permissionHelper.HasLocationPermissionAsync.ContinueWith((getPermissionTask) =>
+            {
+                if (getPermissionTask.IsCompleted)
+                {
+                    RunOnUiThread(() =>
+                    {
+                        // Set our view from the "main" layout resource
+                        SetContentView(Resource.Layout.Main);
 
-            mapFragment.GetMapAsync(this);
+
+                        mapFragment = FragmentManager.FindFragmentById(Resource.Id.map) as MapFragment;
+
+                        mapFragment.GetMapAsync(this);
+                    });
+                }
+            });
         }
 
-        public void OnMapReady(GoogleMap googleMap)
+        public /*async*/ void OnMapReady(GoogleMap googleMap)
         {
             map = googleMap;
 
             map.MapType = GoogleMap.MapTypeNormal;
-            map.MyLocationEnabled = true;
 
             map.AddMarker(new MarkerOptions().SetPosition(Location_NewYork));
 
@@ -92,10 +102,29 @@ namespace DroidMapping
                 }
             };
 
-            CameraUpdate update = CameraUpdateFactory.NewLatLngZoom(Location_Xamarin, map.MaxZoomLevel);
-            map.MoveCamera(update);
+            //CameraUpdate update = CameraUpdateFactory.NewLatLngZoom(Location_Xamarin, map.MaxZoomLevel);
+            //map.MoveCamera(update);
 
             map.MapLongClick += (sender, e) => map.AnimateCamera(CameraUpdateFactory.ZoomOut(), 1000, null);
+
+            if (permissionHelper.HasMappingPermissions())
+            {
+                map.MyLocationEnabled = true;
+            }
+
+            //var grantedLocationPermission = await permissionHelper.HasLocationPermissionAsync;
+            //map.MyLocationEnabled = grantedLocationPermission;
+
+            //permissionHelper.HasLocationPermissionAsync.ContinueWith((Task<bool> getPermissionTask) =>
+            //{
+            //    if (getPermissionTask.IsCompleted)
+            //    {
+            //        this.RunOnUiThread(() =>
+            //        {
+            //             map.MyLocationEnabled = getPermissionTask.Result;
+            //        });
+            //    }
+            //});
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
