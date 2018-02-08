@@ -3,6 +3,7 @@ using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DroidMapping
 {
@@ -11,10 +12,19 @@ namespace DroidMapping
         readonly Activity currentActivity;
         const int MappingPermissionsRequestCode = 1;
         static string[] requiredPermissions = new[] { Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation };
-        
+
+        readonly TaskCompletionSource<bool> hasPermissionAsyncSource;
+        public Task<bool> HasLocationPermissionAsync
+        {
+            get {
+                return hasPermissionAsyncSource.Task;
+            }
+        }
+
         public MappingPermissionsHelper(Activity activity)
         {
             currentActivity = activity;
+            hasPermissionAsyncSource = new TaskCompletionSource<bool>();
         }
 
         public bool HasMappingPermissions()
@@ -37,7 +47,11 @@ namespace DroidMapping
             // Only required for Android Nougat and newer.
             if ((int)Build.VERSION.SdkInt < 23) { return; }
 
-            if (HasMappingPermissions()) { return; }
+            if (HasMappingPermissions())
+            {
+                hasPermissionAsyncSource.TrySetResult(true);
+                return;
+            }
 
             if (ShouldShowPermissionRationale())
             {
@@ -83,6 +97,11 @@ namespace DroidMapping
                     .SetPositiveButton("Okay", (s, a) => { })
                     .Create();
                 cannotProceedWithoutPermissionAlert.Show();
+                hasPermissionAsyncSource.TrySetResult(false);
+            }
+            else
+            {
+                hasPermissionAsyncSource.TrySetResult(true);
             }
         }
     }
