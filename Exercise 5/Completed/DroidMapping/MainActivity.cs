@@ -27,29 +27,28 @@ namespace DroidMapping
             permissionHelper = new MappingPermissionsHelper(this);
             permissionHelper.CheckAndRequestPermissions();
 
-            permissionHelper.HasLocationPermissionAsync.ContinueWith((getPermissionTask) =>
-            {
-                if (getPermissionTask.IsCompleted)
-                {
-                    RunOnUiThread(() =>
-                    {
-                        // Set our view from the "main" layout resource
-                        SetContentView(Resource.Layout.Main);
+            // Set our view from the "main" layout resource
+            SetContentView(Resource.Layout.Main);
 
+            mapFragment = FragmentManager.FindFragmentById(Resource.Id.map) as MapFragment;
 
-                        mapFragment = FragmentManager.FindFragmentById(Resource.Id.map) as MapFragment;
-
-                        mapFragment.GetMapAsync(this);
-                    });
-                }
-            });
+            mapFragment.GetMapAsync(this);
         }
 
-        public /*async*/ void OnMapReady(GoogleMap googleMap)
+        public void OnMapReady(GoogleMap googleMap)
         {
             map = googleMap;
 
             map.MapType = GoogleMap.MapTypeNormal;
+
+            Task.Run(async () =>
+            {
+                var hasLocationPermissions = await permissionHelper.CheckAndRequestPermissions();
+                RunOnUiThread(() => 
+                {
+                    map.MyLocationEnabled = hasLocationPermissions;
+                });
+            });
 
             map.AddMarker(new MarkerOptions().SetPosition(Location_NewYork));
 
@@ -102,33 +101,16 @@ namespace DroidMapping
                 }
             };
 
-            //CameraUpdate update = CameraUpdateFactory.NewLatLngZoom(Location_Xamarin, map.MaxZoomLevel);
-            //map.MoveCamera(update);
+            CameraUpdate update = CameraUpdateFactory.NewLatLngZoom(Location_Xamarin, map.MaxZoomLevel);
+            map.MoveCamera(update);
 
             map.MapLongClick += (sender, e) => map.AnimateCamera(CameraUpdateFactory.ZoomOut(), 1000, null);
-
-            if (permissionHelper.HasMappingPermissions())
-            {
-                map.MyLocationEnabled = true;
-            }
-
-            //var grantedLocationPermission = await permissionHelper.HasLocationPermissionAsync;
-            //map.MyLocationEnabled = grantedLocationPermission;
-
-            //permissionHelper.HasLocationPermissionAsync.ContinueWith((Task<bool> getPermissionTask) =>
-            //{
-            //    if (getPermissionTask.IsCompleted)
-            //    {
-            //        this.RunOnUiThread(() =>
-            //        {
-            //             map.MyLocationEnabled = getPermissionTask.Result;
-            //        });
-            //    }
-            //});
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
         {
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
             permissionHelper.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }

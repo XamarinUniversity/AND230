@@ -14,15 +14,18 @@ namespace DroidMapping
         {
             base.OnCreate(savedInstanceState);
 
+            permissionHelper = new MappingPermissionsHelper(this);
+            permissionHelper.CheckAndRequestPermissions();
+
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
 
-            permissionHelper = new MappingPermissionsHelper(this);
-            permissionHelper.CheckAndRequestPermissions();
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
         {
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
             permissionHelper.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }

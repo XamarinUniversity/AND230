@@ -14,12 +14,6 @@ namespace DroidMapping
         static string[] requiredPermissions = new[] { Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation };
 
         readonly TaskCompletionSource<bool> hasPermissionAsyncSource;
-        public Task<bool> HasLocationPermissionAsync
-        {
-            get {
-                return hasPermissionAsyncSource.Task;
-            }
-        }
 
         public MappingPermissionsHelper(Activity activity)
         {
@@ -37,20 +31,24 @@ namespace DroidMapping
             return requiredPermissions.Any(permission => currentActivity.ShouldShowRequestPermissionRationale(permission));
         }
 
-        public void RequestPermissions()
+        void RequestPermissions()
         {
             currentActivity.RequestPermissions(requiredPermissions, MappingPermissionsRequestCode);
         }
 
-        public void CheckAndRequestPermissions()
+        public Task<bool> CheckAndRequestPermissions()
         {
-            // Only required for Android Nougat and newer.
-            if ((int)Build.VERSION.SdkInt < 23) { return; }
+            // Only required for Android Marshmallow and newer.
+            if ((int)Build.VERSION.SdkInt < 23)
+            {
+                hasPermissionAsyncSource.TrySetResult(true);
+                return hasPermissionAsyncSource.Task;
+            }
 
             if (HasMappingPermissions())
             {
                 hasPermissionAsyncSource.TrySetResult(true);
-                return;
+                return hasPermissionAsyncSource.Task;
             }
 
             if (ShouldShowPermissionRationale())
@@ -61,6 +59,8 @@ namespace DroidMapping
             {
                 RequestPermissions();
             }
+
+            return hasPermissionAsyncSource.Task;
         }
 
         void ShowPermissionRationale()

@@ -3,6 +3,7 @@ using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DroidMapping
 {
@@ -11,10 +12,13 @@ namespace DroidMapping
         readonly Activity currentActivity;
         const int MappingPermissionsRequestCode = 1;
         static string[] requiredPermissions = new[] { Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation };
-        
+
+        readonly TaskCompletionSource<bool> hasPermissionAsyncSource;
+
         public MappingPermissionsHelper(Activity activity)
         {
             currentActivity = activity;
+            hasPermissionAsyncSource = new TaskCompletionSource<bool>();
         }
 
         public bool HasMappingPermissions()
@@ -27,17 +31,25 @@ namespace DroidMapping
             return requiredPermissions.Any(permission => currentActivity.ShouldShowRequestPermissionRationale(permission));
         }
 
-        public void RequestPermissions()
+        void RequestPermissions()
         {
             currentActivity.RequestPermissions(requiredPermissions, MappingPermissionsRequestCode);
         }
 
-        public void CheckAndRequestPermissions()
+        public Task<bool> CheckAndRequestPermissions()
         {
-            // Only required for Android Nougat and newer.
-            if ((int)Build.VERSION.SdkInt < 23) { return; }
+            // Only required for Android Marshmallow and newer.
+            if ((int)Build.VERSION.SdkInt < 23)
+            {
+                hasPermissionAsyncSource.TrySetResult(true);
+                return hasPermissionAsyncSource.Task;
+            }
 
-            if (HasMappingPermissions()) { return; }
+            if (HasMappingPermissions())
+            {
+                hasPermissionAsyncSource.TrySetResult(true);
+                return hasPermissionAsyncSource.Task;
+            }
 
             if (ShouldShowPermissionRationale())
             {
@@ -47,6 +59,8 @@ namespace DroidMapping
             {
                 RequestPermissions();
             }
+
+            return hasPermissionAsyncSource.Task;
         }
 
         void ShowPermissionRationale()
@@ -83,6 +97,11 @@ namespace DroidMapping
                     .SetPositiveButton("Okay", (s, a) => { })
                     .Create();
                 cannotProceedWithoutPermissionAlert.Show();
+                hasPermissionAsyncSource.TrySetResult(false);
+            }
+            else
+            {
+                hasPermissionAsyncSource.TrySetResult(true);
             }
         }
     }

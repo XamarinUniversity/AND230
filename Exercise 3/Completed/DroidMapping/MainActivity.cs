@@ -3,6 +3,7 @@ using Android.Widget;
 using Android.OS;
 using Android.Content.PM;
 using Android.Gms.Maps;
+using System.Threading.Tasks;
 
 namespace DroidMapping
 {
@@ -17,11 +18,11 @@ namespace DroidMapping
         {
             base.OnCreate(savedInstanceState);
 
-            // Set our view from the "main" layout resource
-            SetContentView(Resource.Layout.Main);
-
             permissionHelper = new MappingPermissionsHelper(this);
             permissionHelper.CheckAndRequestPermissions();
+
+            // Set our view from the "main" layout resource
+            SetContentView(Resource.Layout.Main);
 
             mapFragment = FragmentManager.FindFragmentById(Resource.Id.map) as MapFragment;
 
@@ -33,11 +34,21 @@ namespace DroidMapping
             map = googleMap;
 
             map.MapType = GoogleMap.MapTypeHybrid;
-            map.MyLocationEnabled = true;
+
+            Task.Run(async () =>
+            {
+                var hasLocationPermissions = await permissionHelper.CheckAndRequestPermissions();
+                RunOnUiThread(() => 
+                {
+                    map.MyLocationEnabled = hasLocationPermissions;
+                });
+            });
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
         {
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
             permissionHelper.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
