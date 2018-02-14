@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Content.PM;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
+using System.Threading.Tasks;
 
 namespace DroidMapping
 {
