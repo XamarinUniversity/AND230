@@ -3,8 +3,8 @@ using Android.Widget;
 using Android.OS;
 using Android.Content.PM;
 using Android.Gms.Maps;
-using Android.Gms.Maps.Model;
 using System.Threading.Tasks;
+using Android.Gms.Maps.Model;
 
 namespace DroidMapping
 {
@@ -14,6 +14,7 @@ namespace DroidMapping
         MappingPermissionsHelper permissionHelper;
         MapFragment mapFragment;
         GoogleMap map;
+        Task<bool> getLocationPermissionsAsync;
 
         static readonly LatLng Location_Xamarin = new LatLng(37.80, -122.40);
         static readonly LatLng Location_NewYork = new LatLng(40.77, -73.98);
@@ -25,7 +26,7 @@ namespace DroidMapping
             base.OnCreate(savedInstanceState);
 
             permissionHelper = new MappingPermissionsHelper(this);
-            permissionHelper.CheckAndRequestPermissions();
+            getLocationPermissionsAsync = permissionHelper.CheckAndRequestPermissions();
 
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
@@ -35,20 +36,11 @@ namespace DroidMapping
             mapFragment.GetMapAsync(this);
         }
 
-        public void OnMapReady(GoogleMap googleMap)
+        public async void OnMapReady(GoogleMap googleMap)
         {
             map = googleMap;
 
             map.MapType = GoogleMap.MapTypeNormal;
-
-            Task.Run(async () =>
-            {
-                var hasLocationPermissions = await permissionHelper.CheckAndRequestPermissions();
-                RunOnUiThread(() => 
-                {
-                    map.MyLocationEnabled = hasLocationPermissions;
-                });
-            });
 
             map.AddMarker(new MarkerOptions().SetPosition(Location_NewYork));
 
@@ -100,6 +92,9 @@ namespace DroidMapping
                         .DefaultMarker(BitmapDescriptorFactory.HueYellow));
                 }
             };
+
+            var hasLocationPermissions = await permissionHelper.CheckAndRequestPermissions();
+            map.MyLocationEnabled = hasLocationPermissions;
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)

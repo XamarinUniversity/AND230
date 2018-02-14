@@ -13,13 +13,14 @@ namespace DroidMapping
         MappingPermissionsHelper permissionHelper;
         MapFragment mapFragment;
         GoogleMap map;
+        Task<bool> getLocationPermissionsAsync;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             permissionHelper = new MappingPermissionsHelper(this);
-            permissionHelper.CheckAndRequestPermissions();
+            getLocationPermissionsAsync = permissionHelper.CheckAndRequestPermissions();
 
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
@@ -29,20 +30,14 @@ namespace DroidMapping
             mapFragment.GetMapAsync(this);
         }
 
-        public void OnMapReady(GoogleMap googleMap)
+        public async void OnMapReady(GoogleMap googleMap)
         {
             map = googleMap;
 
             map.MapType = GoogleMap.MapTypeHybrid;
 
-            Task.Run(async () =>
-            {
-                var hasLocationPermissions = await permissionHelper.CheckAndRequestPermissions();
-                RunOnUiThread(() => 
-                {
-                    map.MyLocationEnabled = hasLocationPermissions;
-                });
-            });
+            var hasLocationPermissions = await permissionHelper.CheckAndRequestPermissions();
+            map.MyLocationEnabled = hasLocationPermissions;
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
