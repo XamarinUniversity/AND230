@@ -98,7 +98,7 @@ namespace DroidMapping
 
             map.MapLongClick += (sender, e) => map.AnimateCamera(CameraUpdateFactory.ZoomOut(), 1000, null);
 
-            var hasLocationPermissions = await permissionHelper.CheckAndRequestPermissions();
+            var hasLocationPermissions = await getLocationPermissionsAsync;
             map.MyLocationEnabled = hasLocationPermissions;
         }
 

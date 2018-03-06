@@ -93,7 +93,7 @@ namespace DroidMapping
                 }
             };
 
-            var hasLocationPermissions = await permissionHelper.CheckAndRequestPermissions();
+            var hasLocationPermissions = await getLocationPermissionsAsync;
             map.MyLocationEnabled = hasLocationPermissions;
         }
 

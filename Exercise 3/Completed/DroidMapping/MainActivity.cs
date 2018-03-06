@@ -36,7 +36,7 @@ namespace DroidMapping
 
             map.MapType = GoogleMap.MapTypeHybrid;
 
-            var hasLocationPermissions = await permissionHelper.CheckAndRequestPermissions();
+            var hasLocationPermissions = await getLocationPermissionsAsync;
             map.MyLocationEnabled = hasLocationPermissions;
         }
 
