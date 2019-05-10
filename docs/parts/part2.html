@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 2: Obtaining Google API Credentials for the Google Maps Android API</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>Google Maps</header>
+
+    <section id="main">
+        <h1 id="page-title"></h1>
+
+        <h2>Duration</h2>
+
+        <p>15 minutes</p>
+
+        <!-- - - - - - - - - Goals - - - - - - - - -->
+        <h2 id="goals">Lab goals</h2>
+
+        <p>
+            In this exercise, you will register for a Maps API key with Google, which you need in order to use the Google Maps functionality in Android. You will then modify your Android application and add the key into the app.
+        </p>
+
+        <div class="hintblock">
+            <b>Note:</b> It is assumed that you have already installed the Google Play library in the Android SDK and configured your emulator or device to have the Google applications installed. If not, please refer to the <a href="../Start%20Here.html#installGoogleApps">development and testing environment setup instructions</a> before you begin this exercise.
+        </div>
+
+        <p>
+            To complete this exercise, you will perform the following steps:
+        </p>
+
+        <ol>
+            <li>Create a project in the Google APIs console.</li>
+            <li>Obtain the API key.</li>
+            <li>Set all the Google API key information into the DroidMapping application.</li>
+            <li>Add the required Android manifest flags and runtime permissions requests.</li>
+        </ol>
+
+        <h2>Required Assets</h2>
+
+        <p>
+            There is a <b>Exercise 2</b> folder included with this lab exercise which contains a completed project to compare your work against.
+        </p>
+        <!-- - - - - - - - - Steps - - - - - - - - -->
+
+        <h1 id="steps">Steps</h1>
+
+        <p>
+            This is a group exercise, intended to be done in a live class, if you are working through this on your own, you can use the step-by-step instructions below. You can also utilize the high-level goals defined above to work through the code, relying on the below instructions to fill in any necessary details.
+        </p>
+
+        <h2>Creating an API Project</h2>
+
+        <p>
+            The first thing we need to do is create a new project in the Google APIs console or add the Google Maps Android API service to an existing project. This will enable our application to use the services provided by Google Maps.
+        </p>
+
+        <ol>
+            <li>
+                In the browser, navigate to the <a href="https://console.developers.google.com/project">Google API Console</a>. You must either create a new project or select an existing project you already have defined in the Google console. The instructions below will assume you are creating a new project.
+            </li>
+
+            <li>
+                Name your new project "DroidMapping". This name will need to be unique to your Google API Console; it will be assigned an ID to make the project unique across all API developers as you can see in the screenshot below.
+
+                <div>
+                    <img class="indent-small" src="./res/images/lab1-creating-api-project-name.png" max-width="100%">
+                </div>
+
+                <div class="hintblock">
+                    The Google API project name is <em>not</em> the same as your application name or package identifier; this is a name used to identify the project to Google and is not exposed to the user. You can even reuse the same Google API project across your Android apps - multiple SHA1 keys can be associated to a single API registration.
+                </div>
+            </li>
+
+            <li>
+                Once the project is created (or selected), click on the <strong>Library</strong> tab in the left navigation bar. A searchable list of all Google API services available to a project will display.
+            </li>
+
+            <li>
+                Either locate the Google Maps section and select <strong>Google Maps Android API</strong> or search for "Google Maps Android API" in the API search box (<em>not</em> the "Google Places API for Android").
+            </li>
+
+            <li>
+                <strong>Enable</strong> this service for this project with the button at the top.
+            </li>
+
+            <li>
+                Once you turn the service on, it might display the terms of service. If it does, accept them and dismiss the dialog.
+            </li>
+        </ol>
+
+        <p>At this point the API project has been created and Google Maps Android API has been added to it. Next, we will look at how to create an API key and authorize a Xamarin.Android application so that it is able to use this feature.</p>
+
+        <h2>Obtaining the API Key</h2>
+
+        <p>
+            Once the Console API project has been created, it is necessary to create an Android API key. Android applications require the API key before they are granted access to Android Map API. Without this, the map display will be empty.
+        </p>
+
+        <ol>
+            <li>
+                In the Google API Manager, click on the <strong>Credentials</strong> link in the sidebar. In the presented screen, use the <strong>Create Credentials > API key</strong> button to start creating the key.
+            </li>
+
+            <li>
+                In the "API key created" popup, click <strong>RESTRICT KEY</strong>.
+            </li>
+
+            <li>
+                Next, we need to authorize an application to use this API key. In the next screen, enter a name for the key; multiple apps can share a key, so use a name that represents the access and services you are authorizing with this key.
+            </li>
+
+            <li>
+                Still within the new key's Credentials screen, choose the "Android apps" option under Key restriction.
+            </li>
+
+            <li>
+                Next, click the "<strong>+</strong>" button to add the package name and fingerprint. In the shown boxes, enter the package name of your application. Since we've not set the application settings yet, use <b>com.xamarin.droidmapping</b> as the package name. (You can also pick your own package name, just make sure you set the same package name in the app!) Now, enter the SHA1 fingerprint you got in the last exercise.
+            </li>
+
+            <li>
+                Click the <strong>Save</strong> button, which will return you to the Credentials screen that displays the API key.
+            </li>
+
+        </ol>
+
+        <h2>Modify the Android application settings</h2>
+        <p>
+            Next, we need to modify our mapping application and set all the proper pieces in place to use Google Maps.
+        </p>
+
+        <ol>
+            <li>
+                Open the DroidMapping project's properties from the Solution pad, and select the <strong>Android Manifest</strong> tab. (You can also edit the <strong>Properties &gt; AndroidManifest.xml</strong> file directly.)
+            </li>
+
+            <li>
+                Set the package name to <b>com.xamarin.droidmapping</b>. Remember, it <em>must</em> match the registered package name you used when creating the API key.
+            </li>
+
+            <li>
+                Set the minimum Android version to 4.4 and the latest specific Target Android version. (For now, avoid the "Use Compile using SDK version" option and pick the newest named option.)
+            </li>
+
+            <li>
+                Next, add the required Android permissions we talked about in the class. Recall that you will need the following permissions:
+                <ul class="indent-none">
+                    <li>INTERNET</li>
+                    <li>ACCESS_NETWORK_STATE</li>
+                    <li>ACCESS_COURSE_LOCATION (optional, but add it anyway for device location use)</li>
+                    <li>ACCESS_FINE_LOCATION (optional, but add it anyway for device location use)</li>
+                </ul>
+                
+                <img class="indent-small" src="./res/images/lab1-step6g.png" width="650">
+            </li>
+        </ol>
+
+        <h2>Ask for permissions at runtime</h2>
+        <p>
+            We also need to ask the user at runtime for these permissions. Most of the implementation has been provided, but we will need to call the provided methods from our app.
+        </p>
+
+        <ol>
+            <li>Add the <strong>Assets &gt; MappingPermissionsHelper.cs</strong> C# class to the project from your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/AND230/">course materials</a>.</li>
+            <li>In the <strong>Solution Explorer</strong>, open <strong>MainActivity.cs</strong>.</li>
+            <li>At the top of the class, add a <code>MappingPermissionsHelper</code> field named <code>permissionsHelper</code>.</li>
+            <li>Add an additional <code>Task&lt;bool> getLocationPermissionsAsync</code> class field that we will use to know when the user has granted us permission. (You will need to add a using statement for the <code>Task</code> type.)</li></li>
+            <li>Inside the <code>OnCreate</code> method, assign a new instance of <code>MappingPermissionsHelper</code> to that new field, passing the constructor the current activity.</li>
+            <li>Since our app requires all its permissions, we will ask for those permissions immediately. Add a call to the <code>CheckAndRequestPermissions</code> method of our helper, assigning the returning task to our <code>getLocationPermissionsAsync</code> field&mdash;this will allow us to await the asynchronous permissions request when we need it later.</li>
+            <li>With the runtime permissions system, we will need to handle the callback Android makes to our app as well. Add an override to the activity's <code>OnRequestPermissionsResult</code> method. (You will need to add a using statement for the <code>Permission</code> type.)</li>
+            <li>Within your new <code>OnRequestPermissionsResult</code> override, call the base implementation and then call the <code>OnRequestPermissionsResult</code> of our helper to handle the result in the provided class.</li>
+        </ol>
+
+<p><a href="#" onclick="toggleCode(this,'fixupModels');return false;" class="uiitem">Show Code</a><div class="indent-medium" id="fixupModels" style="display:none;">
+<pre class="prettyprint codeblock">
+...
+<mark>using Android.Content.PM;</mark>
+<mark>using System.Threading.Tasks;</mark>
+
+[Activity(Label = "DroidMapping", MainLauncher = true, Icon = "@drawable/icon")]
+public class MainActivity : Activity
+{
+    <mark>MappingPermissionsHelper permissionHelper;</mark>
+    <mark>Task<bool> getLocationPermissionsAsync;</mark>
+
+    protected override void OnCreate(Bundle bundle)
+    {
+        base.OnCreate(bundle);
+
+        <mark>permissionHelper = new MappingPermissionsHelper(this);</mark>
+        <mark>getLocationPermissionsAsync = permissionHelper.CheckAndRequestPermissions();</mark>
+
+        SetContentView(Resource.Layout.Main);
+    }
+
+    <mark>public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)</mark>
+    <mark>{</mark>
+    <mark>    base.OnRequestPermissionsResult(requestCode, permissions, grantResults);</mark>
+
+    <mark>    permissionHelper.OnRequestPermissionsResult(requestCode, permissions, grantResults);</mark>
+    <mark>}</mark>
+}
+</pre></div></p>
+
+        <h2>Add Google Maps API requirements</h2>
+        <p>
+            Next, let's add the API key into the application.
+        </p>
+        <ol>
+            <li>
+                This is a piece of <em>metadata</em> which can either be added into the <b>AndroidManifest.xml</b> by editing it in source view, or in code through an assembly-level <code>MetaDataAttribute</code>. This latter approach is what we will use because it allows us to change the value depending on the release or debug build.
+            </li>
+
+            <li>
+                Add a new C# source file to the project named <b>GoogleMapsKey.cs</b>.
+            </li>
+
+            <li>
+                Add the following code to the file, replacing any existing template code.
+            </li>
+            <li>
+                Replace the placeholder strings with your API key values from the Google API console.
+            </li>
+
+<pre class="prettyprint codeblock">
+using Android.App;
+
+#if RELEASE
+[assembly: MetaDataAttribute("com.google.android.geo.API_KEY", Value="release_key_goes_here")]
+#else
+[assembly: MetaDataAttribute("com.google.android.geo.API_KEY", Value="debug_key_goes_here")]
+#endif
+</pre>
+        </ol>
+
+        <h2>Add the Google Play Services Package</h2>
+        <p>
+            In this final step, we will add the Google Play Services package from NuGet. This will give our application access to the Google Maps Android API by providing the bindings to the APK you installed earlier in the SDK Manager.
+        </p>
+
+        <ol>
+            <li>
+                Right-click on the <b>DroidMapping</b> project in the solution and select <b>Add > Add NuGet Packages</b>, or in Visual Studio you can right-click on the <b>References</b> folder and select <b>Manage NuGet Packages...</b>.
+            </li>
+
+            <li>
+                Search for "<b>Xamarin.GooglePlayServices.Maps</b>" and add the package to your project.
+            </li>
+
+            <img class="indent-small" src="./res/images/add-nuget-component.png" width="650" />
+
+            <li>
+               It will add several dependency packages to your project which are required by Google Play Services, including common base libraries and support libraries.
+            </li>
+
+            <li>
+                Build and run the application to make sure it compiles and executes - you won't see any information yet.
+            </li>
+        </ol>
+
+<div class="indent-none hintblock">
+    <b>Note:</b> If the application fails to build with a <code>java.lang.OutOfMemoryError: Java heap space</code> error, then the package generator is likely running out of memory. You can fix this by editing the <strong>JavaMaximumHeapSize</strong> value of the project file. Inside the project properties, we can increase this value. On Windows, navigate to <strong>Android Options &gt; Advanced</strong> and set <strong>Java Max Heap Size</strong> to <code>1G</code>. On macOS, navigate to <strong>Build &gt; Android Build &gt; Advanced</strong> and set <strong>Java heap size</strong> to <code>1G</code>.
+</div>
+
+        <!-- - - - - - - - - Summary - - - - - - - - -->
+
+        <h1>Summary</h1>
+
+        <p>
+            Congratulations! In this lab exercise, you added Google Play Services component to your project, acquired and specified the Google Maps Android API, added required permissions to the <b>AndroidManifest.xml</b> and generated and added the API key to your maps application.
+        </p>
+
+        <div class="align-right">
+            <a href="../Start%20Here.html">Go Back</a>
+        </div>
+
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.</footer>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 1: Locate your keystore and SHA1 fingerprint</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>Google Maps</header>
+
+    <section id="main">
+        <h1 id="page-title"></h1>
+
+        <h2>Duration</h2>
+
+        <p>5 minutes</p>
+
+        <!-- - - - - - - - - Goals - - - - - - - - -->
+        <h2 id="goals">Lab goals</h2>
+
+        <p>
+            In this exercise, we will create a new Android application and then locate the debug keystore used to sign it. We will record the SHA1 fingerprint so we can use it to identify the application with Google Play services.
+        </p>
+
+        <p>
+            To complete this exercise, you will perform the following steps:
+        </p>
+
+        <ol>
+            <li>Create a new Android project (DroidMapping)</li>
+
+            <li>Retrieve the SHA1 fingerprint of the keystore that is used to sign the application.</li>
+        </ol>
+
+        <h2>Required Assets</h2>
+
+        <p>
+            There is a <b>Exercise 1</b> folder included with this lab exercise which contains a completed project to compare your work against.
+        </p>
+        <!-- - - - - - - - - Steps - - - - - - - - -->
+
+        <h1 id="steps">Steps</h1>
+
+        <p>
+            This is a group exercise, intended to be done in a live class, if you are working through this on your own, you can use the step-by-step instructions below. You can also utilize the high-level goals defined above to work through the code, relying on the below instructions to fill in any necessary details.
+        </p>
+
+
+        <h2>Create the Android application</h2>
+        <p>
+            First, we need to create our mapping application. The debug keystore is not created until you build <em>and deploy</em> the application - this is when it is signed.
+        </p>
+
+        <ol>
+            <li>
+                Create a new Xamarin.Android application: choose <strong>Android &gt; Android App</strong> on Visual Studio for Mac or <strong>Visual C# &gt; Android &gt; Blank App (Android)</strong> for Visual Studio 2017. Name your new app <b>DroidMapping</b>.
+                <div><img class="indent-small" style="width: 600px; max-width: 100%;" src="./res/images/new-project.png" /></div>
+            </li>
+        </ol>
+
+        <p>First, let's remove any boilerplate UI which is added to the application.</p>
+
+        <ol start="2">
+            <li>
+                Open <b>MainActivity.cs</b> and remove the <code>Button</code> and tap-counting click handler assignment. (This sample code may not be present, depending on the project template you chose.)
+            </li>
+            <li>
+                Additionally, open <b>Main.axml</b> in <b>Resources\layout\</b> and remove the <b>Button</b> there as well. We will eventually add some mapping UI to this project. (Again, this sample XML may not be present, depending on the project template you chose.)
+            </li>
+            <li>
+                Build and deploy the application to your device or emulator. It should just present a blank screen.
+            </li>
+        </ol>
+
+        <h2>Get the SHA1 fingerprint</h2>
+
+        <p>
+            Next, we are going to get the SH1 fingerprint from our debug keystore used to sign all debug applicaitons. We will need to register this fingerprint with the Google API console in order to identify our apps and access the mapping services.
+            <br>
+            <br>
+            There's a command line project that will attempt to find the SHA1 for the debug keystore in the <b>SHA1Extractor</b> folder. You can run this tool on MacOS or Windows to get the SHA1 fingerprint which you'll use in the next exercise. 
+            <img src="./res/images/SHA1Extractor.png" />
+            If you run into issues, you can find the fingerprint manually by following the steps below.
+        </p>
+
+        <ol>
+            <li>
+                To request a Maps API key from Google, you need to know the SHA1 fingerprint of the keystore that is used to sign the application. This means that you will have to determine the SHA1 fingerprint for the debug keystore, and then the SHA1 fingerprint for the keystore that is used to sign your application for release. By default the keystore that is used to sign debug versions of a Xamarin.Android application can be found at the following locations:
+            </li>
+
+<pre class="hintblock">
+<b>Windows</b> - <code>C:\Users\[USERNAME]\AppData\Local\Xamarin\Mono for Android\debug.keystore</code>
+<b>OSX</b> - <code>/Users/[USERNAME]/.local/share/Xamarin/Mono for Android/debug.keystore</code>
+</pre>
+            <li>
+                Locate Java <code>bin</code> directory. You will need the information about the keystore by running the <code class="codeblock">keytool</code> command from the JDK. This tools is normally found in the following locations:
+            </li>
+
+<pre class="hintblock">
+<b>Windows</b> - <code>C:\Program Files (x86)\Java\jdk[VERSION]\bin\keytool.exe</code>
+<b>macOS</b> - <code>/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/keytool</code>
+<b>macOS (if you cannot find the above path)</b> - <code>/System/Library/Java/JavaVirtualMachines/[VERSION].jdk/Contents/Home/bin/keytool</code>
+</pre>
+
+
+            <li>
+                Run the keytool application from the command line using the following parameters:
+
+<pre class="indent-none codeblock">
+keytool -list -v -keystore [STORE FILENAME] -storepass [STORE PASSWORD] -keypass [KEY PASSWORD]
+</pre>
+
+
+                Here is an example for macOS:
+
+<pre class="indent-none codeblock">
+keytool -list -v -keystore ~/.local/share/Xamarin/Mono\ for\ Android/debug.keystore -storepass android -keypass android
+</pre>
+            </li>
+
+            <li>
+            You will see something like the following output to your console window:
+
+<pre class="codeblock">
+Keystore type: JKS
+Keystore provider: SUN
+
+Your keystore contains 1 entry
+
+Alias name: androiddebugkey
+Creation date: Nov 21, 2013
+Entry type: PrivateKeyEntry
+Certificate chain length: 1
+Certificate[1]:
+Owner: CN=Android Debug, O=Android, C=US
+Issuer: CN=Android Debug, O=Android, C=US
+Serial number: 528e619d
+Valid from: Thu Nov 21 13:40:13 CST 2013 until: Tue Feb 17 13:40:13 CST 2043
+Certificate fingerprints:
+   MD5:  33:37:EB:AB:58:21:2F:0C:84:89:2B:E0:8E:51:D3:95
+   SHA1: <span class="highlight">2F:5B:C7:6D:F6:8E:87:69:1A:62:44:14:59:4B:9F:4F:3B:EE:35:E9</span>
+   Signature algorithm name: SHA1withRSA
+   Version: 3
+</pre>            
+
+            You will need the SHA1 fingerprint (highlighted above).
+            </li>
+            <li>Copy and save your SHA1 fingerprint.</li>
+          </ol>
+
+        
+        <!-- - - - - - - - - Summary - - - - - - - - -->
+
+        <h1>Summary</h1>
+
+        <p>
+            Congratulations! In this lab exercise, you created a new Android application and used the <b>keytool</b> Java SDK tool to get the signing SHA1 key used to identify the debug build.
+        </p>
+
+        <div class="align-right">
+            <a href="../Start%20Here.html">Go Back</a>
+        </div>
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.</footer>
+</body>
+</html>

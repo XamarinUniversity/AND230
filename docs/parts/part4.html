@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 4: Working with markers</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>Google Maps</header>
+
+    <section id="main">
+
+    <h1 id="page-title"></h1>
+    <h2>Duration</h2>
+    <p>10-15 minutes</p>
+    
+    <!-- - - - - - - - - Goals - - - - - - - - -->
+    <h2 id="goals">Lab goals</h2>
+    <p> 
+      In this exercise, you will add annotations to the map in the form of <em>markers</em>. When you are finished, the application will look something like this:
+    </p>
+
+    <img src="./res/images/lab3-completed.png" />
+
+    <h2>Required Assets</h2>
+    <p> 
+      There is a <b>Exercise 4</b> folder included with this lab exercise which contains a completed project if you'd like to compare your work, or deviate from these lab instructions to experiment. 
+    </p>
+
+    <h2>Exercise Challenge</h2>
+    <p>
+      To complete this exercise, you will need to do the following high-level steps. Use these to guide you through the code changes and ask questions of the instructor or refer to the slides just covered in class. If you are doing the exercise on your own, then you can refer to the step-by-step directions below to fill in any necessary details.
+    </p>
+    <ol>
+      <li>
+        Add four markers to the map, using the coordinates listed in the code block below. The four markers will be:
+          <ol class="indent-none">
+            <li>
+              A default <code>Marker</code> over New York City in mid-town Manhattan.
+            </li>
+
+            <li>
+              A second <code>Marker</code> with an image over the Xamarin HQ. This marker will also set a <code>Title</code> and <code>Snippet</code> to support an info window.
+            </li>
+
+            <li>
+              A third Yellow <code>Marker</code> over Chicago. This marker should be draggable.
+            </li>
+
+            <li>
+              A final Blue <code>Marker</code> over Dallas. This marker will have a <code>Title</code> and <code>Snippet</code> and change the info window anchor to be on the top-right corner.
+            </li>
+          </ol>
+      </li>
+
+      <li>
+        Add some event handlers to manage interaction with the markers, info windows and map itself. You will add three handlers:
+          <ul class="indent-none" type="square">
+            <li>
+            Handle the <code>MarkerClick</code> event and look for the Dallas marker. If it is clicked, reverse the <code>Flat</code> property on the marker to have it rotate with the map. This is a boolean flag which you can just flip the value: 
+
+            <pre class="codeblock prettyprint">marker.Flat = !marker.Flat;</pre>
+            
+            The info window should continue to be displayed in all cases (remember you need to do something specific to enable this behavior!)
+            </li>
+
+            <li>
+              Handle the <code>InfoWindowClick</code> event and look for the Chicago marker. If found, change the color of the marker to <code>BitmapDescriptorFactory.HueRose</code>.
+            </li>
+
+            <li>
+              Finally, handle the <code>MapClick</code> event and reset the Chicago marker color back to yellow.
+            </li>
+          </ul>
+
+      <li>
+        Here are the coordinates you will be using.
+      </li>
+
+<pre class="prettyprint codeblock">
+static readonly LatLng Location_Xamarin = new LatLng(37.77, -122.41);
+static readonly LatLng Location_NewYork = new LatLng(40.77, -73.98);
+static readonly LatLng Location_Chicago = new LatLng(41.88, -87.63);
+static readonly LatLng Location_Dallas = new LatLng(32.90, -97.03);
+</pre>
+
+    </ol>
+
+    <div class="hintblock">
+      To improve the performance of the map/render, you might want to change the map type back to Normal if it's still in Satellite or Hybrid mode. In addition, you will want to enable user gestures to move the map around and allow interactivity if it's currently disabled.
+    </div>
+
+    <p>
+      You can either continue on from the prior exercise, or use the completed solution from <b>Exercise 2</b>. Make sure to setup the API key in the <b>GoogleMapsKey.cs</b> file if you use the prior solution.
+    </p>
+    
+    <!-- - - - - - - - - Steps - - - - - - - - -->
+    <h1 id="steps">Steps</h1>
+
+      <h2>Adding Markers to the map</h2>
+      <p> 
+        Let's start by adding some markers to the map and see how they visualize.
+      </p>
+      
+      <ol>
+        <li>
+          Start by adding all the coordinates as fields into the class from the above code snippet - these are just static fields and are the <code>LatLng</code> positions you need for each marker.
+        </li>
+
+        <li>
+          Open the <b>MainActivity.cs</b> file and locate the <code>OnMapReady</code> method&mdash;we'll add new code to this method prior to the <code>await getLocationPermissionsAsync</code> so the markers can be placed without waiting on the user's runtime permission response.
+        </li>
+        <li>
+            Use the <code>AddMarker</code> method to add a new <code>MarkerOptions</code> to the map over New York. Use the <code>SetPosition</code> fluent method on the <code>MarkerOptions</code> to set the coordinate to <code>Location_NewYork</code>.
+        </li>
+
+<p><a href="#" onclick="toggleCode(this,'firstMarker');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="firstMarker" style="display:none;">
+<pre class="prettyprint">
+<mark>using Android.Gms.Maps.Model;</mark>
+...
+<mark>static readonly LatLng Location_Xamarin = new LatLng(37.80, -122.40);</mark>
+<mark>static readonly LatLng Location_NewYork = new LatLng(40.77, -73.98);</mark>
+<mark>static readonly LatLng Location_Chicago = new LatLng(41.88, -87.63);</mark>
+<mark>static readonly LatLng Location_Dallas = new LatLng(32.90, -97.03);</mark>
+
+public async void OnMapReady(GoogleMap googleMap)
+{
+    map = googleMap;
+    <mark>map.AddMarker(new MarkerOptions().SetPosition(Location_NewYork));</mark>
+    ...
+</pre></div></p>
+
+      </ol>
+
+      <p>
+        Run the application to see the Red marker over New York City. Notice that as you zoom in and out of the map, the marker stays the same size and is always pointed "up".
+      </p>
+
+      <ol start="3">
+        <li>
+          Stop the application and add a second marker using the <code>Location_Xamarin</code> field. This time, set the following values using the fluent API:
+            <ul class="indent-none" type="square">
+              <li><code>SetTitle</code> with &quot;Xamarin HQ&quot;</li>
+              <li><code>SetSnippet</code> with &quot;Where the magic happens&quot;</li>
+            </ul>
+        </li>
+      </ol>
+
+      <p>
+        Our next marker will use a custom icon instead of the default pin. The custom icon image is found in the exercise assets of your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/AND230/">course materials</a>.
+      </p>
+
+      <ol start="4">
+        <li>Add the <strong>Assets &gt; xamarin_icon.png</strong> image to the <strong>Resources &gt; drawable</strong> folder.</li>
+        <li>
+          On this new marker, set an custom icon using the <code>SetIcon</code> method to the newly added <code>Resource.Drawable.xamarin_icon</code> value. You will want to use <code>BitmapDescriptorFactor.FromResource</code> to load this icon and create a <code>BitmapDescriptor</code>.
+        </li>
+
+<p><a href="#" onclick="toggleCode(this,'secondMarker');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="secondMarker" style="display:none;">
+<pre class="prettyprint">
+map.AddMarker(new MarkerOptions()
+    .SetPosition(Location_Xamarin)
+    .SetTitle("Xamarin HQ")
+    .SetSnippet("Where the magic happens")
+    .SetIcon(BitmapDescriptorFactory
+        .FromResource(Resource.Drawable.xamarin_icon)));
+</pre></div></p>  
+      </ol>
+
+      <p>
+        Run the application to see the results - you should be able to tap on the icon and get an info window which displays your title and snippet.
+      </p>
+
+      <ol start="5">
+        <li>
+          Next, add a yellow marker over Chicago (make sure to set the color to <code>HueYellow</code>). Set a title of &quot;Chicago&quot; on the marker and make this one <em>draggable</em> through the <code>Draggable</code> method on the <code>MarkerOption</code>. Save the resulting <code>Marker</code> into a variable, as we will want access to it in a moment.
+        </li>
+<p><a href="#" onclick="toggleCode(this,'thirdMarker');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="thirdMarker" style="display:none;">
+<pre class="prettyprint">
+Marker chicagoMarker = map.AddMarker(new MarkerOptions()
+      .SetPosition(Location_Chicago)
+      .SetTitle("Chicago")
+      .Draggable(true)
+      .SetIcon(BitmapDescriptorFactory
+         .DefaultMarker(BitmapDescriptorFactory.HueYellow)));
+</pre></div></p>  
+      </ol>
+
+      <p>
+        Run the application and try dragging this new marker around by tapping, holding, and moving it.
+      </p>
+
+      <ol start="6">
+        <li>
+          Finally, add a blue marker over Dallas. Set a title and snippet for the info window and adjust the info window position through the <code>InfoWindowAnchor</code> method on the <code>MarkerOption</code> to be on the top/right side of the marker - this would be <code>(0,1)</code>. Save this marker into a variable as well.
+        </li>
+
+<p><a href="#" onclick="toggleCode(this,'fourthMarker');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="fourthMarker" style="display:none;">
+<pre class="prettyprint">
+Marker dallasMarker = map.AddMarker(new MarkerOptions()
+      .SetPosition(Location_Dallas)
+      .SetTitle("Dallas")
+      .SetSnippet("Go Cowboys!")
+      .InfoWindowAnchor(1,0)
+      .SetIcon(BitmapDescriptorFactory
+        .DefaultMarker(BitmapDescriptorFactory.HueBlue)));
+</pre></div></p>          
+      </ol>
+
+      <p>
+        Run the application and tap on the Dallas marker to display the info window - notice how it is positioned differently than the Chicago one?
+      </p>
+
+      <h2>Adding custom behavior into the map</h2>
+      <p> 
+        Next, let's add some event handlers to control what happens when we tap a marker, info window or the map. All of these handlers can be wired up in the <code>OnMapReady</code> implementation.
+      </p>
+      
+      <ol>
+         <li>
+          Add an event handler to the <code>MarkerClick</code> event. You can use an anonymous method, lambda, or traditional delegate method - whatever style you prefer. In the handler, look for the Dallas marker (remember how to compare markers?) If it's the Dallas marker, flip the <code>Flat</code> property (<code>!Flat</code>). 
+         </li>
+
+<p><a href="#" onclick="toggleCode(this,'markerClick');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="markerClick" style="display:none;">
+<pre class="prettyprint">
+map.MarkerClick += delegate(object sender, GoogleMap.MarkerClickEventArgs e) {
+    if (e.Marker.Equals(dallasMarker)) {
+        dallasMarker.Flat = !dallasMarker.Flat;
+    }
+};
+</pre></div></p>           
+      </ol>
+
+      <p>
+        Run the application and find the Dallas marker. Rotate the map around using two fingers and notice that the marker stays oriented in the "Up" direction. Now, tap the marker. Now when you rotate the map, the marker should rotate with the map - <code>Flat</code> markers orient themselves to the surface of the map rather than the device. Tap it again to reverse the effect.
+      </p>
+
+      <div class="hintblock">
+        To rotate the map using the Google Android emulators, you can hold <kbd>Ctrl</kbd> on Windows or <kbd>Command</kbd> on macOS while dragging to simulate two touch points.
+      </div>
+
+      <p>
+        Notice what is now broken, however - we are no longer seeing the info window popups. Try a different marker with a title - Chicago for example. It will not display the popup either.
+      </p>
+
+      <ol start="2">
+        <li>
+          Since we want the default behavior to also be executed, set the <code>GoogleMap.MarkerClickEventArgs.Handled</code> flag to <code>false</code> in the <code>MarkerClick</code> event. You can either always do the assignment, or only when it's not Dallas - this will turn off the info window for Dallas but enable it for other markers. <em>Challenge: how can you activate it for Dallas through the API? Check the code below for the answer.</em>
+        </li>
+
+<p><a href="#" onclick="toggleCode(this,'markerClick2');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="markerClick2" style="display:none;">
+<pre class="prettyprint">
+map.MarkerClick += delegate(object sender, GoogleMap.MarkerClickEventArgs e) {
+    if (e.Marker.Equals(dallasMarker)) {
+        dallasMarker.Flat = !dallasMarker.Flat;
+        <mark>dallasMarker.ShowInfoWindow();</mark>
+    } else {
+       // Execute default behavior for other markers.
+       // Could also just execute the following line for every
+       // marker..
+       <mark>e.Handled = false;</mark>
+   }
+};
+</pre></div></p>           
+
+      </ol>
+
+      <p>
+        Run the application and verify that the info windows are now displayed as expected.
+      </p>
+
+
+      <ol start="3">
+        <li>
+          Next, add an event handler for the <code>InfoWindowClick</code> event. This is called when you interact with the info window directly. In the handler, identify the Chicago marker and change the marker color to <code>HueRose</code>.
+        </li>
+
+<p><a href="#" onclick="toggleCode(this,'infoWindowClick');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="infoWindowClick" style="display:none;">
+<pre class="prettyprint">
+map.InfoWindowClick += (sender, e) => 
+{
+    if (e.Marker.Id == chicagoMarker.Id) {
+        e.Marker.SetIcon(BitmapDescriptorFactory
+             .DefaultMarker(BitmapDescriptorFactory.HueRose));
+    }
+};
+</pre></div></p> 
+
+        <li>
+          Finally, add an event handler for the <code>MapClick</code> event and reverse the color change (change the Chicago marker back to yellow) <em>if</em> the Chicago marker's Info Window is not visible.
+        </li>
+
+<p><a href="#" onclick="toggleCode(this,'mapClick');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="mapClick" style="display:none;">
+<pre class="prettyprint">
+map.MapClick += (sender, e) => 
+{
+    if (!chicagoMarker.IsInfoWindowShown) {
+        chicagoMarker.SetIcon(BitmapDescriptorFactory
+            .DefaultMarker(BitmapDescriptorFactory.HueYellow));
+    }
+};
+</pre></div></p> 
+      </ol>
+
+      <p>
+        Run the application one last time and tap the Chicago marker to display the info window - then tap the info window to see the marker change color. Tapping on the map should then reverse the effect.
+      </p>
+
+      <!-- - - - - - - - - Summary - - - - - - - - -->
+      <h1>Summary</h1>
+      <p> 
+        Congratulations! In this exercise, you added annotations to the map in the form of <em>markers</em>.
+      </p>
+    
+      <div class="align-right"> <a href="../Start%20Here.html">Go Back</a> </div>
+     </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.</footer>
+</body>
+</html>
