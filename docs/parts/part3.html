@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 3: Adding support for Google Maps</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>Google Maps</header>
+
+    <section id="main">
+    <h1 id="page-title"></h1>
+    <h2>Duration</h2>
+    <p>10 minutes</p>
+    
+    <!-- - - - - - - - - Goals - - - - - - - - -->
+    <h2 id="goals">Lab goals</h2>
+    <p> 
+      In this exercise, you will add the map visualization to your Android application and display the interactive map in a fragment.
+    </p>
+
+    <img src="./res/images/completed-lab2.PNG" />
+    
+    <h2>Required Assets</h2>
+    <p> 
+      There is a <b>Exercise 3</b> folder included with this lab exercise which contains a completed project if you'd like to compare your work or deviate from these exercise instructions to experiment. 
+    </p>
+
+    <h2>Exercise Challenge</h2>
+    <p>
+      To complete this exercise, you will need to do the following high-level steps. Use these to guide you through the code changes and ask questions of the instructor or refer to the slides just covered in class. If you are doing the exercise on your own, then you can refer to the step-by-step directions below to fill in any necessary details.
+    </p>
+    <ol>
+      <li>
+        You will add in a <code>MapFragment</code> into the <b>Main.axml</b> layout file and get access to it in the <code>OnCreate</code> method in <b>MainActivity.cs</b> and run the program to see the initial map display.
+      </li>
+      <li>
+        Next, you will obtain the <code>GoogleMap</code> instance through the <code>GetMapAsync</code> method and use it to turn various mapping settings on and off, including:
+         <ul class="indent-none">
+            <li>Change the <code>MapType</code> to try various styles.</li>
+            <li>Turning on the current location.</li>
+            <li>Enabling various interactive user controls through <code>UiSettings</code>.</li>
+            <li>Disable the built-in gestures to create a static map.</li>
+         </ul> 
+      </li>
+    </ol>
+
+    <p>
+      You can either continue on from the prior exercise, or use the completed solution from <b>Exercise 2</b>. Make sure to setup the API key in the <b>GoogleMapsKey.cs</b> file if you use the prior solution.
+    </p>
+    
+    <!-- - - - - - - - - Steps - - - - - - - - -->
+    <h1 id="steps">Steps</h1>
+
+      <h2>Add a Basic Map</h2>
+      <p>In this exercise, we will use the Google Play Maps library to visualize a simple Google Map in our application.</p>
+
+      <ol>
+         <li>
+            First we need to add the <code>MapFragment</code> to the UI. Open the <b>Main.axml</b> file in the <b>Resources/Layout</b> folder in the project. This will open the designer view, but unfortunately, the designer does not support adding fragments to the UI so we will need to hand-edit the XML.
+         </li>
+         <li>
+            Switch to the <em>source view</em> by clicking the tab at the bottom of the designer window. It should look something like:
+         </li>
+
+         <img src="./res/images/source-tab.PNG" />
+
+         <li>
+            Add a <code>fragment</code> tag into the existing <code>LinearLayout</code>. It should have the following attributes set:
+         </li>
+
+         <table class="grid">
+            <tr>
+               <th>Attribute</th>
+               <th>Value</th>
+            </tr>
+            <tr>
+               <td>android:id</td>
+               <td>@+id/map</td>
+            </tr>
+            <tr>
+               <td>android:layout_width</td>
+               <td>match_parent</td>
+            </tr>
+            <tr>
+               <td>android:layout_height</td>
+               <td>match_parent</td>
+            </tr>
+            <tr>
+               <td>class</td>
+               <td>com.google.android.gms.maps.MapFragment</td>
+            </tr>
+         </table>
+
+         <p>
+            The last attribute: <code>class</code> is the important one that designates this as a Map UI. We are currently setting this up to be a full-screen map, but this fragment could be placed into any screen or space desired by adjusting the layout properties appropriately.
+         </p>
+
+         <p>
+            In addition, even though you did this in XML, you could also add the fragment in code for a completely dynamic insertion.
+         </p>
+
+<p><a href="#" onclick="toggleCode(this,'layoutxml');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="layoutxml" style="display:none;">
+<pre class="prettyprint">
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <mark>&lt;fragment</mark>
+    <mark>    android:id="@+id/map"</mark>
+    <mark>    android:layout_width="match_parent"</mark>
+    <mark>    android:layout_height="match_parent"</mark>
+    <mark>    class="com.google.android.gms.maps.MapFragment" /></mark>
+    &lt;/LinearLayout></pre></div></p>         
+        </ol>
+
+        <p>
+            That is all that is required to display the map, but let's and use the <code>FragmentManager</code> to get access to this fragment element in the <code>OnCreate</code> method.
+        </p>
+        <ol start="4">
+         <li>
+            Open the <b>MainActivity.cs</b> file and add a new <code>MapFragment</code> field to the class. Name it <b>mapFragment</b>.
+         </li>
+
+         <li>
+            Next, locate the <code>OnCreate</code> override and assign the new field to the fragment using the <code>FragmentManager.FindFragmentById</code> method. You will want to use the assigned resource id you applied to the XML.
+         </li>
+
+<p><a href="#" onclick="toggleCode(this,'getMapFragment');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="getMapFragment" style="display:none;">
+<pre class="prettyprint">
+...
+<mark>using Android.Gms.Maps;</mark>
+
+public class MainActivity : Activity
+{
+  <mark>MapFragment mapFragment;</mark>
+  MappingPermissionsHelper permissionHelper;
+
+  protected override void OnCreate(Bundle bundle)
+  {
+      base.OnCreate(bundle);
+
+      // Set our view from the "main" layout resource
+      SetContentView(Resource.Layout.Main);
+
+      // Find the map fragment
+      <mark>mapFragment = FragmentManager.FindFragmentById(Resource.Id.map) as MapFragment;</mark>
+
+      ...
+  }
+  ...
+}
+</pre></div></p> 
+
+         <li>
+            Run the application on a device or emulator configured with the Google apps. It should display an interactive map (you can pinch-to-zoom, pan and rotate the map around). <a href="https://support.google.com/gmm/answer/3273126?hl=en">Here's a list of supported gestures</a>.
+         </li>
+
+      <img src="./res/images/lab2-part1-complete.png" />
+
+      <div class="hintblock">
+        <b>Note:</b> If the map does <em>not</em> display and you just see an empty grid, then verify the Google API key and package name are <em>exactly</em> identical to what is in the Google Developer console. This behavior generally means the application could not authenticate to the Google map servers.
+      </div>
+
+      <div class="hintblock">
+        <b>Note:</b> If you get a <code>Java.Lang.NoSuchFieldError</code> error, your Google Maps package may not have been compiled into your project correctly. This can be fixed by doing a <strong>Clean</strong> on your Android project.
+      </div>
+
+      </ol>
+
+      <h2>Get the GoogleMap instance</h2>
+      <p> 
+         In this part you will get the <code>GoogleMap</code> instance from the created fragment.
+      </p>
+      
+      <ol>
+         <li>
+            In the <code>OnCreate</code> override, after you've obtained the <code>MapFragment</code>, call the <code>GetMapAsync</code> method. This takes a reference to a <code>IOnMapReadyCallback</code> instance. Go ahead and pass <code>this</code> (the current instance).
+         </li>
+
+         <li>
+            Next, to satisfy the requirement, implement the <code>IOnMapReadyCallback</code> interface on your <code>Activity</code>. It has a single method <code>OnMapReady</code>.
+         </li>
+
+         <div class="hintblock">
+         <b>Hint:</b> A <em>quick</em> and easy way to implement an interface is to add the interface requirement to the class (e.g. <code>MainActivity : Activity<span class="highlight">, IOnMapReadyCallback</span></code>) and then right click on the interface name (which might be underlined in red). You can then select <b>Fix &gt; Implement Interface</b> in Visual Studio for Mac, or <b>Implement Interface</b> in the context menu on Visual Studio for Windows.
+         </div>
+
+         <li>
+            In the <code>OnMapReady</code> method, store the passed <code>GoogleMap</code> object in a field in the class named <b>map</b>.
+         </li>
+
+<p><a href="#" onclick="toggleCode(this,'getGoogMap');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="getGoogMap" style="display:none;">
+<pre class="prettyprint">
+public class MainActivity : Activity<mark>, IOnMapReadyCallback</mark>
+{
+    ...
+    MapFragment mapFragment;
+    <mark>GoogleMap map;</mark>
+
+    protected override void OnCreate(Bundle bundle)
+    {
+        base.OnCreate(bundle);
+
+        // Set our view from the "main" layout resource
+        SetContentView(Resource.Layout.Main);
+
+        // Find the map fragment
+        mapFragment = FragmentManager.FindFragmentById(Resource.Id.map) as MapFragment;
+
+        <mark>mapFragment.GetMapAsync(this);</mark>
+
+        ...
+    }
+
+    <mark>public void OnMapReady(GoogleMap googleMap)</mark>
+    <mark>{</mark>
+    <mark>    map = googleMap;</mark>
+    <mark>}</mark>
+    ...
+}
+</pre></div></p> 
+
+         <li>
+            Build the application just to make sure it doesn't have any compile errors.
+         </li>
+      </ol>
+
+      <h2>Customize the map</h2>
+      <p> 
+         In this final part you will change some of the settings of the <code>GoogleMap</code> to control the visualization. You will do all the settings changes in the <code>OnMapReady</code> implementation after you have gotten the map instance.
+      </p>
+      
+      <ol>
+         <li>
+            First, change the <code>MapType</code> being displayed. The property is an integer type which can be one of the following constant values:
+               <ul class="indent-none">
+                  <li>GoogleMap.MapTypeNone</li>
+                  <li>GoogleMap.MapTypeNormal (default)</li>
+                  <li>GoogleMap.MapTypeSatellite</li>
+                  <li>GoogleMap.MapTypeHybrid</li>
+               </ul>
+         </li>
+
+         <li>
+            Change to the satellite view and run the application to see the results. Try the Hybrid type as well.
+         </li>
+
+<p><a href="#" onclick="toggleCode(this,'mapType');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="mapType" style="display:none;">
+<pre class="prettyprint">
+public void OnMapReady(GoogleMap googleMap)
+{
+   map = googleMap;
+   <mark>map.MapType = GoogleMap.MapTypeSatellite;</mark>
+}
+</pre></div></p> 
+
+         <li>
+            Next, turn on the current location marker using the <code>MyLocationEnabled</code> property. Being able to set this property to true is completely dependent on the user granting us location permissions. If we ran it with just that line, we would have a runtime exception any time the user hasn't clicked "allow" prior to that line of code being executed.
+          </li>
+          <li>
+            To avoid this race, switch <code>OnMapReady</code> to async so we can await the permissions request result, setting <code>MyLocationEnabled</code> according to the user's response.
+          </li>
+          <li>
+            Run the application to see the results. You will likely have to scroll the map around and zoom in to find the marker.
+         </li>
+
+<p><a href="#" onclick="toggleCode(this,'currentLoc');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="currentLoc" style="display:none;">
+<pre class="prettyprint">
+public <mark>async</mark> void OnMapReady(GoogleMap googleMap)
+{
+    map = googleMap;
+    map.MapType = GoogleMap.MapTypeSatellite;
+
+    <mark>hasLocationPermissions = await getLocationPermissionsAsync;</mark>
+    <mark>map.MyLocationEnabled = hasLocationPermissions;</mark>
+}
+</pre></div></p>
+
+<p><a href="#" onclick="toggleBlock(this,'myLocationEmulatorFail', 'I\'m not seeing my initial location on the emulator', 'Hide section');return false;" class="uiitem">I'm not seeing my location on the emulator</a>
+<div id="myLocationEmulatorFail" style="display:none;">
+    <p>While running location-dependent apps in an emulator, sometimes your location will not be set for use in apps. To resolve this in the Google Android emulators, we need to send the initial location point. Navigate to the emulator's <strong>Extended controls</strong> via the ellipsis (...) button in the emulator toolbar. Open the <strong>Location</strong> section, set a <strong>Longitude</strong> and <strong>Latitude</strong> value, and click <strong>SEND</strong>. You should now see that provided location highlighted.</p>
+</div></p>
+
+<p><a href="#" onclick="toggleBlock(this,'myLocationMapsFail', 'I\'m not seeing my location [the first time I run the app]', 'Hide section');return false;" class="uiitem">I'm not seeing my location [the first time I run the app]</a>
+<div id="myLocationMapsFail" style="display:none;">
+  <p>In some versions of Google Maps for Android, <a href="https://issuetracker.google.com/issues/73122459">setting <code>MyLocationEnabled</code> to true will not visibly change anything if the MapFragment has already loaded</a>. When you run this app the second time after allowing location permission, your location will show up fine. In order to work around this, unfortunately, you need to ensure the user has provided permission before the map is loaded. In our app, that would be before <code>SetContentView</code>. To work around this, you would need to await the permissions response in <code>OnCreate</code> before setting the content view.</p>
+
+  <p>This approach will work, but the map will not have time to load asynchronously while you wait on the user to respond to the permission request, making your app apear slower. Alternatively, your app could request permission on a prior screen before ever loading the map fragment.</p>
+
+<div class="indent-large"><pre class="prettyprint">
+protected override <mark>async</mark> void OnCreate(Bundle savedInstanceState)
+{
+    base.OnCreate(savedInstanceState);
+
+    permissionHelper = new MappingPermissionsHelper(this);
+    getLocationPermissionsAsync = permissionHelper.CheckAndRequestPermissions();
+    <mark>await getLocationPermissionsAsync;</mark>
+
+    // Set our view from the "main" layout resource
+    SetContentView(Resource.Layout.Main);
+
+    mapFragment = FragmentManager.FindFragmentById(Resource.Id.map) as MapFragment;
+
+    mapFragment.GetMapAsync(this);
+}
+</pre></div>
+</div></p>
+
+         <li>
+            If you are using the Google Android emulators to test your application, you can change the current location through the <strong>Extended controls</strong> panel (click the ellipsis icon "<strong>...</strong>" in the emulator toolbar) and going to the <b>Location</b> section.
+         </li>
+
+         <img src="./res/images/change-location-google-emulators.png" style="max-width: 100%; width: 450px;" />
+
+         <li>
+            Try turning on the UI adornments using the <code>UiSettings</code> property.
+               <ul class="indent-none">
+                  <li>CompassEnabled</li>
+                  <li>MyLocationButtonEnabled</li>
+                  <li>ZoomControlsEnabled</li>
+               </ul>
+         </li>
+
+         <li>
+            Finally, try simulating a read-only map by turning off the gestures through the properties on <code>UiSettings</code> or through the <code>UiSettings.SetAllGesturesEnabled</code> method and run the app to see how it affects the map interaction.
+         </li>
+
+      </ol>
+
+      <!-- - - - - - - - - Summary - - - - - - - - -->
+      <h1>Summary</h1>
+      <p> 
+      Congratulations! In this lab exercise, you added a simple map to the UI and changed some of the basic configuration elements to customize it to your display. 
+      </p>
+    
+      <div class="align-right"> <a href="../Start%20Here.html">Go Back</a> </div>
+     </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.</footer>
+</body>
+</html>

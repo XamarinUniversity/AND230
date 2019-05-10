@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Google Maps</title>
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/prettify.css">
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/styles.css">
+</head>
+
+<body>
+    <!-- This will be filled in at runtime -->
+    <header role="course-title"></header>
+
+   	<section id="main">
+
+		<h2>Before you begin</h2>
+		 <p>
+        This is an Android class which will require a Xamarin.Android development environment to complete the coding exercises. Please read the <a href="https://university.xamarin.com/resources/setup-requirements">setup requirements</a> if you need help installing the Xamarin development environment.
+      </p>
+      <p>
+      In addition, you will need to install the optional Google Play Services SDK library from the Android SDK Manager and get an Android emulator with Google Play Services installed, or (preferably) a device to run the exercise on.
+      </p>
+<p>
+<a href="#" onclick="toggleBlock(this, 'installGoogleApps', 'How do I setup my development and testing environment?', 'Hide'); return false;" class="uiitem">How do I setup my development and testing environment?</a>
+<div class="indent-none wsblock" id="installGoogleApps" style="display:none;">
+<!-- Each item is in a div "wsitem" -->
+<div class="wsitem">
+   <b>How do I setup my development and testing environment?</b>
+   <p>
+      To compile the exercises provided for this session, you need to make sure you have the <b>Google Play Services</b> library installed in the Android SDK Manager. You can open the SDK Manager through the Tools menu in the IDE. The following screen shot shows which package to include:
+   </p>
+   <img src="./parts/res/images/lab1-step5a.png">
+
+   <b>Testing on an emulator</b>
+   <p>
+      Testing an app using Google Maps on an emulator requires that emulator having Google Play Services installed on it. You can install Google Apps on your emulator whether using a Google Android emulator, Xamarin Android Player or Visual Studio's Android Emulator by following the <a href="https://university.xamarin.com/resources/how-to-install-google-play-on-android-emulator">online instructions</a>. 
+   </p>
+
+   <b>Using Google's pre-built Android image</b>
+   <p>
+      If you want to just run an image with the APIs pre-installed, then the best approach is to download the Google emulator image (remember to use x86 for performance). This is done using the Android SDK Manager. Make sure that you download the Google API package for the same API version as the emulator that you will be using.
+   </p>
+   <img src="./parts/res/images/lab1-step5b.png">
+
+   <p>
+      Create a new emulator image or edit an existing emulator by clicking on the Open Android Emulator Manager in the Tools menu option in Visual Studio. Make sure to set your emulator's Target to a Google API support target API level, which provides you with an emulator with Google Apps already installed.
+   </p>
+
+   <img src="./parts/res/images/lab1-step12.png" width="650">
+
+   <p>
+      Now when you deploy to an emulator, choose the emulator with Google APIs loaded, and Google Maps APIs will work in your emulator.
+   </p>      
+
+   <b>Testing on a physical device</b>
+   <p>
+   You can tell whether maps are supported by the existence of the Google Settings app, and possible the Google Maps app on the device. If either of these apps are present, then the Google APIs are available, otherwise they are not. There is no way to add Google APIs to an unsupported device today - it must be included by the OEM vendor.
+   </p>
+
+</div>
+</div>        
+</p>
+
+		<h2>Overview</h2>
+		<p>
+      In this course, we will define what is Google Play Services, install and use it on an emulator. We will discuss the major Google Maps API V2 classes to display mapping data in your Android application.
+      </p>
+	
+		<h2>Objectives</h2>
+		<ol>
+         <li>Explore Android map options</li>
+         <li>Configure an application to use Google Maps</li>
+         <li>Display a map in your application</li>
+         <li>Add markers to a Google Map</li>
+         <li>Adjust the map position and perspective</li>
+		</ol>
+
+      <h2>Lecture</h2>     
+		<p><a href="./parts/slides.pdf">AND230 - Google Maps</a></p>
+
+        <h2>Exercises</h2>
+        <p>
+            Exercise materials are available from <a href="https://github.com/XamarinUniversity/AND230/">GitHub</a>. The code can be cloned through a desktop Git client or <a href="https://github.com/XamarinUniversity/AND230/archive/master.zip">downloaded directly</a> as a ZIP file.
+        </p>
+        <ol>
+         <li>
+            <div class="objective">Locate your keystore and SHA1 fingerprint</div>
+            <a href="./parts/part1.html">Exercise</a>
+            <br />
+            In this first group exercise, you will identify your SHA1 fingerprint from the signing debug keystore.
+         </li>
+			<li>
+            <div class="objective">Obtain a Google API key for Google Maps V2</div>
+            <a href="./parts/part2.html">Exercise</a>
+				<br />
+            In this exercise, you will register your application with the Google developer console to access the Google Maps V2 API.
+         </li>
+            
+         <li>
+				<div class="objective">Adding Support for Google Maps</div>
+				<a href="./parts/part3.html">Exercise</a>
+				<br />
+            In this exercise, you will show the initial map and set the map type to change its style.
+		   </li>
+
+         <li>
+            <div class="objective">Working with markers</div>
+            <a href="./parts/part4.html">Exercise</a>
+            <br />
+            In this exercise, you will add markers to the map to highlight specific points on the map by coordinate.
+         </li>
+
+         <li>
+            <div class="objective">Changing the map viewpoint</div>
+            <a href="./parts/part5.html">Exercise</a>
+            <br />
+            In this final exercise you will show current location and animate the camera view to a location.  
+         </li>
+	  </ol>
+
+      <!-- This section is for additional links and examples that are relevant to 
+         the material in this course -->
+      <h2>Additional resources</h2>
+     
+      <h3>Related Lightning Lectures</h3>
+      <div class="wslist">
+      <a href="https://university.xamarin.com/lightninglectures">Drawing Shapes on Google Maps in Android</a>
+      </div>
+     
+      <h3>Further Reading</h3>
+      <div class="wslist">
+         <a target="_blank" href="http://developer.xamarin.com/guides/android/platform_features/maps_and_location/maps/">Using Maps with Xamarin.Android</a>        
+         <a target="_blank" href="https://developers.google.com/maps/documentation/android/intro">Introduction to the Google Maps Android API v2</a>
+     </div>
+
+
+	</section>
+
+    <script src="./parts/res/js/jquery.min.js"></script>
+    <script src="./parts/res/js/prettify.js"></script>
+    <script src="./parts/res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+</body>
+</html>
+

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 5: Changing the map viewpoint</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>Google Maps</header>
+
+    <section id="main">
+
+    <h1 id="page-title"></h1>
+    <h2>Duration</h2>
+    <p>10 minutes</p>
+
+    <!-- - - - - - - - - Goals - - - - - - - - -->
+    <h2 id="goals">Lab goals</h2>
+    <p>
+      In this exercise, you will alter the camera position and zoom level to specific spots on the map.
+    </p>
+
+    <h2>Required Assets</h2>
+    <p>
+      There is a <b>Exercise 5</b> folder included with this lab exercise which contains a completed project if you'd like to compare your work, or deviate from these lab instructions to experiment.
+    </p>
+
+    <h2>Exercise Challenge</h2>
+    <p>
+      To complete this exercise, you will need to do the following high-level steps. Use these to guide you through the code changes and ask questions of the instructor or refer to the slides just covered in class. If you are doing the exercise on your own, then you can refer to the step-by-step directions below to fill in any necessary details.
+    </p>
+    <ol>
+      <li>
+        Change the initial position of the map to be some location near you. Since we have not talked about location data yet, you can look up the coordinates for many landmarks on Wikipedia. Use your desired coordinates to populate a <code>LatLng</code> object.
+      </li>
+      <li>
+        Add an event handler to zoom out on a long-click to the map. This is done through the <code>MapLongClick</code> event on the <code>GoogleMap</code>.
+      </li>
+    </ol>
+
+    <div class="hintblock">
+      To improve the performance of the map/render, you might want to change the map type back to Normal if it's still in Satellite or Hybrid mode.
+    </div>
+
+    <p>
+      You can either continue on from the prior exercise, or use the completed solution from <b>Exercise 4</b>. Make sure to setup the API key in the <b>GoogleMapsKey.cs</b> file if you use the prior solution.
+    </p>
+
+    <!-- - - - - - - - - Steps - - - - - - - - -->
+    <h1 id="steps">Steps</h1>
+
+      <h2>Set the initial position of the map</h2>
+      <p>
+        It's a little awkward that the map doesn't display our current location centered. In this part, you will add some code to move the camera to your expected position, or a known position.
+      </p>
+
+      <ol>
+         <li>
+            First, you need a coordinate - use Wikipedia to find the coordinates of a landmark near you. The lab solution will use our existing <code>Location_Xamarin</code> coordinate that you added earlier.
+         </li>
+
+         <li>
+            In the <code>OnMapReady</code> method of your <code>MainActivity</code>, create a new <code>LatLng</code> object with your desired coordinate information (or use an existing one).
+          </li>
+
+          <li>
+            Create a new <code>CameraUpdate</code> object using the <code>CameraUpdateFactory</code>; pass both the coordinate and the maximum zoom level.
+          </li>
+
+          <li>
+            Use the <code>MoveCamera</code> method to adjust the initial position of the map to your coordinate and zoom level.
+          </li>
+
+<p><a href="#" onclick="toggleCode(this,'initialPos');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="initialPos" style="display:none;">
+<pre class="prettyprint">
+CameraUpdate update = CameraUpdateFactory.NewLatLngZoom(Location_Xamarin, map.MaxZoomLevel);
+map.MoveCamera(update);
+</pre></div></p>
+
+          <li>
+            Run the application to see the results.
+          </li>
+      </ol>
+
+      <h2>Zoom out on map long-click</h2>
+      <p>
+        Next, let's add a new operation to smoothly zoom out of the map.
+      </p>
+
+      <ol>
+         <li>
+            In the <code>OnMapReady</code>, hook the <code>MapLongClick</code> event and call CameraUpdateFactory.ZoomOut() to get a <code>CameraUpdate</code> object.
+         </li>
+
+         <li>
+          Pass the update object to the <code>AnimateCamera</code> method, passing an animation time of 1000 (1s), and a <code>null</code> callback for the <code>ICancelableCallback</code>.
+        </li>
+
+        <li>
+          Run the application and touch and hold the map to activate the zoom-out operation. It should smoothly animate out in a about a second's time.
+        </li>
+
+<p><a href="#" onclick="toggleCode(this,'animateOut');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="animateOut" style="display:none;">
+<pre class="prettyprint">
+map.MapLongClick += (sender, e) =>
+        map.AnimateCamera(CameraUpdateFactory.ZoomOut(), 1000, null);
+</pre></div></p>
+      </ol>
+
+      <!-- - - - - - - - - Summary - - - - - - - - -->
+      <h1>Summary</h1>
+      <p>
+      Congratulations! In this lab exercise, you manipulated the camera position in code and centered the map on locations you were interested in.
+      </p>
+
+      <div class="align-right"> <a href="../Start%20Here.html">Go Back</a> </div>
+     </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.</footer>
+</body>
+</html>
